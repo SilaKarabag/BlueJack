@@ -236,3 +236,93 @@ public class BluejackGame {
 
 }
 
+
+
+
+
+
+
+	import java.util.Random;
+public class GUI {
+	    public static void main(String[] args) {
+	        String[] deck = generateDeck();
+	        String[] playerHand = new String[8]; // Increase size to accommodate 8 cards
+	        String[] computerHand = new String[8];
+
+	        // Shuffle the deck
+	        shuffleDeck(deck);
+
+	        for(int i=0; i<deck.length; i++) {
+	        	System.out.print(deck[i] + ", ");
+	        }
+	        System.out.println("\n");
+	        
+	        // Distribute five cards to the player
+	        for (int i = 0; i < 5; i++) {
+	            playerHand[i] = deck[i];
+	        }
+
+	        // Distribute three more cards to the player with random signs
+	        for (int i = 5; i < 8; i++) {
+	            playerHand[i] = getRandomSign() + " " + deck[i - 5];
+	        }
+
+	        // Distribute five cards to the computer
+	        for (int i = 8; i < 13; i++) {
+	            computerHand[i - 8] = deck[i];
+	        }
+
+	        // Distribute three more cards to the computer with random signs
+	        for (int i = 13; i < 16; i++) {
+	            computerHand[i - 8] = getRandomSign() + " " + deck[i - 5];
+	        }
+
+	        // Print the hands
+	        System.out.println("Player's hand: " + arrayToString(playerHand));
+	        System.out.println("Computer's hand: " + arrayToString(computerHand));
+	    }
+
+	    private static String[] generateDeck() {
+	        String[] deck = new String[40];
+
+	        // Generate cards for each color and number
+	        String[] colors = {"Blue", "Red", "Green", "Yellow"};
+	        int index = 0;
+	        for (String color : colors) {
+	            for (int number = 1; number <= 10; number++) {
+	                deck[index++] = color + " " + number;
+	            }
+	        }
+
+	        return deck;
+	    }
+
+	    private static void shuffleDeck(String[] deck) {
+	        Random random = new Random();
+	        for (int i = deck.length - 1; i > 0; i--) {
+	            int j = random.nextInt(i + 1);
+
+	            // Swap deck[i] and deck[j]
+	            String temp = deck[i];
+	            deck[i] = deck[j];
+	            deck[j] = temp;
+	        }
+	    }
+
+	    private static String getRandomSign() {
+	        Random random = new Random();
+	        return (random.nextBoolean() ? "+" : "-");
+	    }
+
+	    private static String arrayToString(String[] array) {
+	        StringBuilder result = new StringBuilder("[");
+	        for (int i = 0; i < array.length; i++) {
+	            result.append(array[i]);
+	            if (i < array.length - 1) {
+	                result.append(", ");
+	            }
+	        }
+	        result.append("]");
+	        return result.toString();
+	    }
+}
