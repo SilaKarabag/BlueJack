@@ -237,11 +237,6 @@ public class BluejackGame {
 }
 
 
-
-
-
-
-
 	import java.util.Random;
 public class GUI {
 	    public static void main(String[] args) {
