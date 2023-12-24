@@ -1,581 +1,253 @@
-import java.util.Scanner;
-public class Main {
-
-	public static void main(String[] args) {
-	
-		System.out.println("Welcome to the Bluejack");
-		Scanner sc = new Scanner(System.in);
-		System.out.println("Please write your name: ");
-		String name = sc.nextLine();
-		System.out.println("Hello "+ name+"!");
-
-		import java.util.Random;
-
-public class BluejackGame {
-    private static final int TOTAL_SETS = 4;
-    private static final int CARDS_PER_SET = 10;
-    private static final int PLAYER_CARDS = 5;
-    private static final int ADDITIONAL_CARDS = 5;
-
-    private int computerScore;
-    private int userScore;
-
-    public static void main(String[] args) {
-        BluejackGame game = new BluejackGame();
-        game.playGame();
-    }
-
-    public void playGame() {
-        for (int round = 1; round <= 3; round++) {
-            System.out.println("Round " + round);
-            initializeDecks();
-            playRound();
-        }
-
-        determineWinner();
-    }
-
-    private void initializeDecks() {
-        int[][] gameDeck = createGameDeck();
-        int[][] playerDecks = new int[2][PLAYER_CARDS + ADDITIONAL_CARDS];
-
-        // Distribute cards from the game deck to player decks
-        for (int i = 0; i < PLAYER_CARDS; i++) {
-            playerDecks[0][i] = gameDeck[i][0]; // Computer's deck
-            playerDecks[1][i] = gameDeck[gameDeck.length - 1 - i][0]; // User's deck
-        }
-
-        // Generate additional random cards for player decks
-        for (int i = PLAYER_CARDS; i < PLAYER_CARDS + ADDITIONAL_CARDS; i++) {
-            if (i < PLAYER_CARDS + 3) {
-                // Three cards with random colors and values between 1 to 6
-                playerDecks[0][i] = generateRandomCard();
-                playerDecks[1][i] = generateRandomCard();
-            } else {
-                // The remaining two cards with an 80 percent chance of being a signed card
-                if (Math.random() < 0.8) {
-                    // Normal signed card
-                    playerDecks[0][i] = generateRandomSignedCard();
-                    playerDecks[1][i] = generateRandomSignedCard();
-                } else {
-                    // Lucky case: one flip card and one double card
-                    playerDecks[0][i] = generateFlipCard();
-                    playerDecks[1][i] = generateDoubleCard();
-                }
-            }
-        }
-
-        // Shuffle the player decks
-        private void shuffleDeck(int[][] deck) {
-            Random random = new Random();
-            for (int i = deck.length - 1; i > 0; i--) {
-                int index = random.nextInt(i + 1);
-
-                // Swap the cards at positions i and index
-                int[] temp = deck[i];
-                deck[i] = deck[index];
-                deck[index] = temp;
-            }
-        }
-
-        shuffleDeck(playerDecks[0]);
-        shuffleDeck(playerDecks[1]);
-    }
-
-    private void playRound() {
-        int[] computerHand = chooseRandomHand();
-        int[] userHand = chooseRandomHand();
-
-        int computerTurn = playTurn(computerHand, "Computer");
-        int userTurn = playTurn(userHand, "User");
-
-        determineRoundWinner(computerTurn, userTurn);
-    }
-
-    private int[] chooseRandomHand() {
-        int[] hand = new int[4];
-        Random random = new Random();
-
-        for (int i = 0; i < 4; i++) {
-            hand[i] = random.nextInt(PLAYER_CARDS + ADDITIONAL_CARDS);
-        }
-
-        return hand;
-    }
-
-    private int playTurn(int[] hand, String playerName) {
-        int totalScore = 0;
-        int lastPlayedCard = 0;
-
-        for (int cardIndex : hand) {
-            int cardValue = getCardValue(cardIndex);
-            totalScore += cardValue;
-
-            if (cardValue > 0) {
-                System.out.println(playerName + " plays a " + cardValue + " card.");
-                lastPlayedCard = cardValue;
-            } else if (cardValue < 0) {
-                System.out.println(playerName + " plays a " + cardValue + " card.");
-                lastPlayedCard = cardValue;
-            } else if (cardValue == 0) {
-                System.out.println(playerName + " plays a " + getSpecialCardType(cardIndex) + " card.");
-                lastPlayedCard = applySpecialCardEffect(lastPlayedCard, cardIndex);
-            }
-        }
-
-        System.out.println(playerName + "'s total score: " + totalScore);
-        return totalScore;
-    }
-
-    private void determineRoundWinner(int computerTurn, int userTurn) {
-        if (computerTurn > 20 && userTurn > 20) {
-            System.out.println("Both players busted. It's a tie!");
-        } else if (computerTurn > 20) {
-            System.out.println("Computer busted! User wins the round.");
-            userScore++;
-        } else if (userTurn > 20) {
-            System.out.println("User busted! Computer wins the round.");
-            computerScore++;
-        } else if (computerTurn > userTurn) {
-            System.out.println("Computer wins the round!");
-            computerScore++;
-        } else if (userTurn > computerTurn) {
-            System.out.println("User wins the round!");
-            userScore++;
-        } else {
-            System.out.println("It's a tie!");
-        }
-    }
-
-    private void determineWinner() {
-        if (userScore > computerScore) {
-            System.out.println("User wins the game!");
-        } else if (computerScore > userScore) {
-            System.out.println("Computer wins the game!");
-        } else {
-            System.out.println("The game is tied!");
-        }
-    }
-
-    private int[][] createGameDeck() {
-        int[][] deck = new int[TOTAL_SETS * CARDS_PER_SET][2];
-        String[] colors = {"Blue", "Yellow", "Red", "Green"};
-
-        int index = 0;
-        for (String color : colors) {
-            for (int value = 1; value <= CARDS_PER_SET; value++) {
-                deck[index][0] = generateCardValue(color, value);
-                index++;
-            }
-        }
-
-        shuffleDeck(deck);
-        return deck;
-    }
-
-    private int generateCardValue(String color, int value) {
-        if ("Blue".equals(color)) {
-            return value;
-        } else if ("Yellow".equals(color)) {
-            return -value;
-        } else if ("Red".equals(color)) {
-            return value;
-        } else if ("Green".equals(color)) {
-            return -value;
-        }
-        return 0;
-    }
-
-    private int generateRandomCard() {
-        Random random = new Random();
-        return random.nextInt(6) + 1;
-    }
-
-    private int generateRandomSignedCard() {
-        Random random = new Random();
-        int value = random.nextInt(6) + 1;
-        return (random.nextBoolean()) ? value : -value;
-    }
-
-    private int generateFlipCard() {
-        return 0; // Placeholder for flip card
-    }
-
-    private int generateDoubleCard() {
-        return 0; // Placeholder for double card
-    }
-
-    private int getCardValue(int cardIndex) {
-        // Placeholder implementation, adjust as needed
-        return 0;
-    }
-
-    private String getSpecialCardType(int cardIndex) {
-        // Placeholder implementation, adjust as needed
-        return "Special";
-    }
-
-    private int applySpecialCardEffect(int lastPlayedCard, int cardIndex) {
-        // Placeholder implementation, adjust as needed
-        return 0;
-    }
-
-    private void shuffleDeck(int[][] deck) {
-        Random random = new Random();
-        for (int i = deck.length - 1; i > 0; i--) {
-            int index = random.nextInt(i + 1);
-            int[] temp = deck[i];
-            deck[i] = deck[index];
-            deck[index] = temp;
-        }
-    }
-}
-
-
-	}
-
-}
-
-0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
-	import java.util.Random;
-public class GUI {
-	    public static void main(String[] args) {
-	        String[] deck = generateDeck();
-	        String[] playerHand = new String[8]; // Increase size to accommodate 8 cards
-	        String[] computerHand = new String[8];
-
-	        // Shuffle the deck
-	        shuffleDeck(deck);
-
-	        for(int i=0; i<deck.length; i++) {
-	        	System.out.print(deck[i] + ", ");
-	        }
-	        System.out.println("\n");
-	        
-	        // Distribute five cards to the player
-	        for (int i = 0; i < 5; i++) {
-	            playerHand[i] = deck[i];
-	        }
-
-	        // Distribute three more cards to the player with random signs
-	        for (int i = 5; i < 8; i++) {
-	            playerHand[i] = getRandomSign() + " " + deck[i - 5];
-	        }
-
-	        // Distribute five cards to the computer
-	        for (int i = 8; i < 13; i++) {
-	            computerHand[i - 8] = deck[i];
-	        }
-
-	        // Distribute three more cards to the computer with random signs
-	        for (int i = 13; i < 16; i++) {
-	            computerHand[i - 8] = getRandomSign() + " " + deck[i - 5];
-	        }
-
-	        // Print the hands
-	        System.out.println("Player's hand: " + arrayToString(playerHand));
-	        System.out.println("Computer's hand: " + arrayToString(computerHand));
-	    }
-
-	    private static String[] generateDeck() {
-	        String[] deck = new String[40];
-
-	        // Generate cards for each color and number
-	        String[] colors = {"Blue", "Red", "Green", "Yellow"};
-	        int index = 0;
-	        for (String color : colors) {
-	            for (int number = 1; number <= 10; number++) {
-	                deck[index++] = color + " " + number;
-	            }
-	        }
-
-	        return deck;
-	    }
-
-	    private static void shuffleDeck(String[] deck) {
-	        Random random = new Random();
-	        for (int i = deck.length - 1; i > 0; i--) {
-	            int j = random.nextInt(i + 1);
-
-	            // Swap deck[i] and deck[j]
-	            String temp = deck[i];
-	            deck[i] = deck[j];
-	            deck[j] = temp;
-	        }
-	    }
-
-	    private static String getRandomSign() {
-	        Random random = new Random();
-	        return (random.nextBoolean() ? "+" : "-");
-	    }
-
-	    private static String arrayToString(String[] array) {
-	        StringBuilder result = new StringBuilder("[");
-	        for (int i = 0; i < array.length; i++) {
-	            result.append(array[i]);
-	            if (i < array.length - 1) {
-	                result.append(", ");
-	            }
-	        }
-	        result.append("]");
-	        return result.toString();
-	    }
-}
-
-
-00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
 import java.util.Random;
 import java.util.Scanner;
+public class Play {
+	
+	  public static void main(String[] args) {
+		        Play bluejackGame = new Play();
+		        bluejackGame.playGame();
+		    }
 
-public class blueJack {
+		    private Card[] gameDeck;
+		    private Card[] computerDeck;
+		    private Card[] userDeck;
 
-	    public static void main(String[] args) {
-	        blueJack bluejackGame = new blueJack();
-	        bluejackGame.playGame();
-	    }
+		    private int[] computerBoard;
+		    private int[] userBoard;
 
-	    private Card[] gameDeck;
-	    private Card[] computerDeck;
-	    private Card[] userDeck;
+		    private void playGame() {
+		        initializeDecks();
+		        initializeBoards();
+		        int rounds = 0;
 
-	    private int[] computerBoard;
-	    private int[] userBoard;
+		        while (rounds < 3) {
+		            System.out.println("Round " + (rounds + 1));
+		            playRound();
+		            rounds++;
+		        }
 
-	    private void playGame() {
-	        initializeDecks();
-	        initializeBoards();
-	        int rounds = 0;
+		        System.out.println("Game Over");
+		    }
 
-	        while (rounds < 3) {
-	            System.out.println("Round " + (rounds + 1));
-	            playRound();
-	            rounds++;
-	        }
+		    private void initializeDecks() {
+		        gameDeck = createGameDeck();
+		        computerDeck = new Card[10];
+		        userDeck = new Card[10];
 
-	        System.out.println("Game Over");
-	    }
+		        shuffleDeck(gameDeck);
 
-	    private void initializeDecks() {
-	        gameDeck = createGameDeck();
-	        computerDeck = new Card[10];
-	        userDeck = new Card[10];
+		        for (int i = 0; i < 5; i++) {
+		            computerDeck[i] = gameDeck[i];
+		            userDeck[i] = gameDeck[gameDeck.length - 1 - i];
+		        }
 
-	        shuffleDeck(gameDeck);
+		        for (int i = 5; i < 10; i++) {
+		            computerDeck[i] = generateRandomCard();
+		            userDeck[i] = generateRandomCard();
+		        }
+		    }
 
-	        for (int i = 0; i < 5; i++) {
-	            computerDeck[i] = gameDeck[i];
-	            userDeck[i] = gameDeck[gameDeck.length - 1 - i];
-	        }
+		    private void initializeBoards() {
+		        computerBoard = new int[9];
+		        userBoard = new int[9];
+		    }
 
-	        for (int i = 5; i < 10; i++) {
-	            computerDeck[i] = generateRandomCard();
-	            userDeck[i] = generateRandomCard();
-	        }
-	    }
+		    private void playRound() {
+		        Scanner scanner = new Scanner(System.in);
+		        boolean gameOver = false;
 
-	    private void initializeBoards() {
-	        computerBoard = new int[9];
-	        userBoard = new int[9];
-	    }
+		        while (!gameOver) {
+		            System.out.println("Computer's Board: " + arrayToString(computerBoard));
+		            System.out.println("User's Board: " + arrayToString(userBoard));
 
-	    private void playRound() {
-	        Scanner scanner = new Scanner(System.in);
-	        boolean gameOver = false;
+		            // Current player's turn
+		            System.out.println("Your turn.");
+		            System.out.println("1. Draw a card");
+		            System.out.println("2. Stand");
+		            System.out.println("3. Play a card from hand");
+		            int choice = scanner.nextInt();
 
-	        while (!gameOver) {
-	            System.out.println("Computer's Board: " + arrayToString(computerBoard));
-	            System.out.println("User's Board: " + arrayToString(userBoard));
+		            switch (choice) {
+		                case 1:
+		                    drawCard(userBoard);
+		                    break;
+		                case 2:
+		                    stand();
+		                    break;
+		                case 3:
+		                    playCardFromHand(userBoard);
+		                    break;
+		                default:
+		                    System.out.println("Invalid choice. Try again.");
+		                    break;
+		            }
 
-	            // Current player's turn
-	            System.out.println("Your turn.");
-	            System.out.println("1. Draw a card");
-	            System.out.println("2. Stand");
-	            System.out.println("3. Play a card from hand");
-	            int choice = scanner.nextInt();
+		            // Check if the user busted
+		            if (getSum(userBoard) > 20) {
+		                System.out.println("Busted! You lose the set.");
+		                gameOver = true;
+		                break;
+		            }
 
-	            switch (choice) {
-	                case 1:
-	                    drawCard(userBoard);
-	                    break;
-	                case 2:
-	                    stand();
-	                    break;
-	                case 3:
-	                    playCardFromHand(userBoard);
-	                    break;
-	                default:
-	                    System.out.println("Invalid choice. Try again.");
-	                    break;
-	            }
+		            // Computer's turn
+		            System.out.println("Computer's turn.");
+		            int computerChoice = getComputerTurnChoice(computerBoard);
+		            switch (computerChoice) {
+		                case 1:
+		                    drawCard(computerBoard);
+		                    break;
+		                case 2:
+		                    stand();
+		                    break;
+		                case 3:
+		                    playCardFromHand(computerBoard);
+		                    break;
+		            }
 
-	            // Check if the user busted
-	            if (getSum(userBoard) > 20) {
-	                System.out.println("Busted! You lose the set.");
-	                gameOver = true;
-	                break;
-	            }
+		            // Check if the computer busted
+		            if (getSum(computerBoard) > 20) {
+		                System.out.println("Computer busted! You win the set.");
+		                gameOver = true;
+		                break;
+		            }
 
-	            // Computer's turn
-	            System.out.println("Computer's turn.");
-	            int computerChoice = getComputerTurnChoice(computerBoard);
-	            switch (computerChoice) {
-	                case 1:
-	                    drawCard(computerBoard);
-	                    break;
-	                case 2:
-	                    stand();
-	                    break;
-	                case 3:
-	                    playCardFromHand(computerBoard);
-	                    break;
-	            }
+		            // Check if both players stand
+		            if (computerChoice == 2 && choice == 2) {
+		                determineWinner();
+		                gameOver = true;
+		            }
+		        }
+		    }
 
-	            // Check if the computer busted
-	            if (getSum(computerBoard) > 20) {
-	                System.out.println("Computer busted! You win the set.");
-	                gameOver = true;
-	                break;
-	            }
+		    private void drawCard(int[] board) {
+		        Card card = gameDeck[gameDeck.length - 1];
+		        for (int i = 0; i < board.length; i++) {
+		            if (board[i] == 0) {
+		                board[i] = card.getValue();
+		                gameDeck = removeCardFromDeck(gameDeck.length - 1);
+		                break;
+		            }
+		        }
+		    }
 
-	            // Check if both players stand
-	            if (computerChoice == 2 && choice == 2) {
-	                determineWinner();
-	                gameOver = true;
-	            }
-	        }
-	    }
+		    private void stand() {
+		        // Standing does nothing
+		    }
 
-	    private void drawCard(int[] board) {
-	        Card card = gameDeck[gameDeck.length - 1];
-	        for (int i = 0; i < board.length; i++) {
-	            if (board[i] == 0) {
-	                board[i] = card.getValue();
-	                gameDeck = removeCardFromDeck(gameDeck.length - 1);
-	                break;
-	            }
-	        }
-	    }
+		    private void playCardFromHand(int[] board) {
+		        // TODO: Implement logic for playing a card from the hand
+		        // You need to allow the user to play a card from their hand and update the board accordingly.
+		        // Ensure that playing a card ends the turn.
+		    }
 
-	    private void stand() {
-	        // Standing does nothing in this basic implementation
-	    }
+		    private void determineWinner() {
+		        int userSum = getSum(userBoard);
+		        int computerSum = getSum(computerBoard);
 
-	    private void playCardFromHand(int[] board) {
-	        // TODO: Implement logic for playing a card from the hand
-	        // You need to allow the user to play a card from their hand and update the board accordingly.
-	        // Ensure that playing a card ends the turn.
-	    }
+		        System.out.println("User's Score: " + userSum);
+		        System.out.println("Computer's Score: " + computerSum);
 
-	    private void determineWinner() {
-	        int userSum = getSum(userBoard);
-	        int computerSum = getSum(computerBoard);
+		        if (userSum > 20 && computerSum > 20) {
+		            System.out.println("Both players busted. It's a tie!");
+		        } else if (userSum > 20) {
+		            System.out.println("You busted! Computer wins the set.");
+		        } else if (computerSum > 20) {
+		            System.out.println("Computer busted! You win the set.");
+		        } else if (userSum > computerSum) {
+		            System.out.println("You win the set!");
+		        } else if (userSum < computerSum) {
+		            System.out.println("Computer wins the set!");
+		        } else {
+		            System.out.println("It's a tie!");
+		        }
+		    }
 
-	        System.out.println("User's Score: " + userSum);
-	        System.out.println("Computer's Score: " + computerSum);
+		    private int getComputerTurnChoice(int[] board) {
+		        // i can make computer smart?
+		        return 1; // Placeholder, change as needed
+		    }
 
-	        if (userSum > 20 && computerSum > 20) {
-	            System.out.println("Both players busted. It's a tie!");
-	        } else if (userSum > 20) {
-	            System.out.println("You busted! Computer wins the set.");
-	        } else if (computerSum > 20) {
-	            System.out.println("Computer busted! You win the set.");
-	        } else if (userSum > computerSum) {
-	            System.out.println("You win the set!");
-	        } else if (userSum < computerSum) {
-	            System.out.println("Computer wins the set!");
-	        } else {
-	            System.out.println("It's a tie!");
-	        }
-	    }
+		    private String arrayToString(int[] array) {
+		        StringBuilder result = new StringBuilder("[");
+		        for (int i = 0; i < array.length; i++) {
+		            result.append(array[i]);
+		            if (i < array.length - 1) {
+		                result.append(", ");
+		            }
+		        }
+		        result.append("]");
+		        return result.toString();
+		    }
 
-	    private int getComputerTurnChoice(int[] board) {
-	        // TODO: Implement logic for the computer's turn
-	        // You need to determine whether the computer should draw a card, stand, or play a card from its hand.
-	        // The logic should be based on the rules you provided.
-	        return 1; // Placeholder, change as needed
-	    }
+		    private int getSum(int[] board) {
+		        int sum = 0;
+		        for (int value : board) {
+		            sum += value;
+		        }
+		        return sum;
+		    }
 
-	    private String arrayToString(int[] array) {
-	        StringBuilder result = new StringBuilder("[");
-	        for (int i = 0; i < array.length; i++) {
-	            result.append(array[i]);
-	            if (i < array.length - 1) {
-	                result.append(", ");
-	            }
-	        }
-	        result.append("]");
-	        return result.toString();
-	    }
+		    private Card[] createGameDeck() {
+		        Card[] deck = new Card[40];
+		        String[] colors = {"Blue", "Yellow", "Red", "Green"};
 
-	    private int getSum(int[] board) {
-	        int sum = 0;
-	        for (int value : board) {
-	            sum += value;
-	        }
-	        return sum;
-	    }
+		        int index = 0;
+		        for (String color : colors) {
+		            for (int value = 1; value <= 10; value++) {
+		                deck[index++] = new Card(color, value);
+		            }
+		        }
 
-	    private Card[] createGameDeck() {
-	        Card[] deck = new Card[40];
-	        String[] colors = {"Blue", "Yellow", "Red", "Green"};
+		        return deck;
+		    }
 
-	        int index = 0;
-	        for (String color : colors) {
-	            for (int value = 1; value <= 10; value++) {
-	                deck[index++] = new Card(color, value);
-	            }
-	        }
+		    private Card generateRandomCard() {
+		        Random random = new Random();
+		        String color = getRandomColor();
+		        int value = random.nextInt(6) + 1;
+		        boolean isPositive = random.nextBoolean();
 
-	        return deck;
-	    }
+		        if (!isPositive) {
+		            value = -value;
+		        }
 
-	    private Card generateRandomCard() {
-	        Random random = new Random();
-	        String color = getRandomColor();
-	        int value = random.nextInt(6) + 1;
-	        boolean isPositive = random.nextBoolean();
+		        return new Card(color, value);
+		    }
 
-	        if (!isPositive) {
-	            value = -value;
-	        }
+		    private String getRandomColor() {
+		        String[] colors = {"Blue", "Yellow", "Red", "Green"};
+		        Random random = new Random();
+		        return colors[random.nextInt(colors.length)];
+		    }
 
-	        return new Card(color, value);
-	    }
+		    private void shuffleDeck(Card[] deck) {
+		        Random random = new Random();
+		        for (int i = deck.length - 1; i > 0; i--) {
+		            int index = random.nextInt(i + 1);
+		            Card temp = deck[i];
+		            deck[i] = deck[index];
+		            deck[index] = temp;
+		        }
+		    }
 
-	    private String getRandomColor() {
-	        String[] colors = {"Blue", "Yellow", "Red", "Green"};
-	        Random random = new Random();
-	        return colors[random.nextInt(colors.length)];
-	    }
+		    private Card[] removeCardFromDeck(int index) {
+		        Card[] newDeck = new Card[gameDeck.length - 1];
+		        System.arraycopy(gameDeck, 0, newDeck, 0, index);
+		        System.arraycopy(gameDeck, index + 1, newDeck, index, gameDeck.length - index - 1);
+		        return newDeck;
+		    }
 
-	    private void shuffleDeck(Card[] deck) {
-	        Random random = new Random();
-	        for (int i = deck.length - 1; i > 0; i--) {
-	            int index = random.nextInt(i + 1);
-	            Card temp = deck[i];
-	            deck[i] = deck[index];
-	            deck[index] = temp;
-	        }
-	    }
+		    private class Card {
+		        private String color;
+		        private int value;
 
-	    private Card[] removeCardFromDeck(int index) {
-	        Card[] newDeck = new Card[gameDeck.length - 1];
-	        System.arraycopy(gameDeck, 0, newDeck, 0, index);
-	        System.arraycopy(gameDeck, index + 1, newDeck, index, gameDeck.length - index - 1);
-	        return newDeck;
-	    }
+		        public Card(String color, int value) {
+		            this.color = color;
+		            this.value = value;
+		        }
 
-	    private class Card {
-	        private String color;
-	        private int value;
+		        public int getValue() {
+		            return value;
+		        }
+		    }
+		}
 
-	        public Card(String color, int value) {
-	            this.color = color;
-	            this.value = value;
-	        }
-
-	        public int getValue() {
-	            return value;
-	        }
-	    }
-	}
